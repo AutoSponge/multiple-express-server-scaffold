@@ -98,7 +98,19 @@ module.exports = function ( grunt ) {
         return grunt.task.run( tasks );
     } );
 
+    grunt.registerTask( 'validateConfig', function () {
+        servers.reduce( function ( cache, server ) {
+            var serverUrl = url.format( config[server].url );
+            if ( cache[serverUrl] ) {
+                grunt.fail.fatal( 'Duplicate server urls' );
+            } else {
+                cache[serverUrl] = true;
+            }
+            return cache;
+        }, {} );
+    } );
+
     // default task
-    grunt.registerTask( 'default', ['jshint:all', 'concurrent:all'] );
+    grunt.registerTask( 'default', ['validateConfig', 'jshint:all', 'concurrent:all'] );
 
 };
