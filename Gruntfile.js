@@ -1,16 +1,10 @@
 'use strict';
-var protocols = {
-    http: require( 'http' ),
-    https: require( 'https' )
-};
+
 var url = require( 'url' );
 var path = require( 'path' );
-var pem = require( 'pem' );
 var config = require( './config.json' );
-
-var components = [
-    'app'
-];
+var servers = Object.keys( config );
+var gruntConfig = {};
 
 module.exports = function ( grunt ) {
     // show elapsed time at the end
@@ -18,97 +12,81 @@ module.exports = function ( grunt ) {
     // load all grunt tasks
     require( 'load-grunt-tasks' )( grunt );
 
-    grunt.initConfig( {
-        config: config,
-        watch: {
-            options: {
-                nospawn: true,
-                livereload: true
-            },
-            app: {
-                options: {
-                    livereload: config.app.livereload
-                },
-                files: [
-                    '<%= config.app.public %>/{,*/}*.html',
-                    '<%= config.app.public %>/scripts/{,*/}*.js',
-                    '<%= config.app.path %>/images/{,*/}*.{png,jpg,jpeg,gif,webp}'
-                ]
-            }
+    // grunt-contrib-jshint
+    gruntConfig.jshint = {
+        options: {
+            jshintrc: '.jshintrc',
+            reporter: require( 'jshint-stylish' )
         },
-        open: {
-            app: {
-                path: '<%= config.app.protocol %>://<%= config.app.host %>:<%= config.app.port %>/'
-            }
-        },
-        concurrent: {
-            all: {
-                tasks: ['serve:app'],
-                options: {
-                    logConcurrentOutput: true
-                }
-            }
-        },
-        jshint: {
-            options: {
-                jshintrc: '.jshintrc',
-                reporter: require( 'jshint-stylish' )
-            },
-            all: [
-                '<%= config.app.path %>/{,*/}*.js'
-            ]
-        }
-    } );
-
-    function checkNewLine( str ) {
-        return str.lastIndexOf( '\n' ) + 1 === str.length ? str : str + '\n';
-    }
-
-    function createServer( app ) {
-        return function () {
-            var done = this.async();
-            var protocol = app.get( 'protocol' );
-            var host = app.get( 'host' );
-            var port = app.get( 'port' );
-            var uri = protocol + '://' + host + ':' + port;
-
-            function complete() {
-                grunt.log.writeln( 'Express server listening at ' + uri );
-                done();
-            }
-
-            if ( protocol === 'https' ) {
-                pem.createCertificate( {
-                    selfSigned: true
-                }, function ( err, keys ) {
-                    protocols[protocol].createServer( {
-                        key: checkNewLine( keys.serviceKey ),
-                        cert: checkNewLine( keys.certificate )
-                    }, app ).listen( port, complete );
-                } );
-            } else {
-                protocols[protocol].createServer( app )
-                    .listen( port, complete );
+        all: servers.reduce( function ( list, server ) {
+            list.push( path.join( __dirname, config[server].src.path, '/**/*.js' ) );
+            return list;
+        }, ['./*.js'])
+    };
+    servers.reduce( function ( jshint, server ) {
+        jshint[server] = {
+            files: {
+                src: [path.join( __dirname, config[server].src.path, '/**/*.js' )]
             }
         };
-    }
+        return jshint;
+    }, gruntConfig.jshint );
 
-    components.forEach( function ( component ) {
-        var path = __dirname + '/' + config[component].path;
-        grunt.registerTask( component + 'Server', createServer( require( path + '/app' ) ) );
-    } );
+    // grunt-express-server
+    gruntConfig.express = {};
+    servers.reduce( function ( express, server ) {
+        express[server] = {
+            options: {
+                script: path.join( __dirname, config[server].src.path, config[server].src.main )
+            }
+        };
+        return express;
+    }, gruntConfig.express );
 
-    grunt.registerTask( 'serve', function ( target ) {
-        var server = target || 'app';
-        var tasks = [server + 'Server'];
+    // grunt-contrib-watch
+    gruntConfig.watch = {};
+    servers.reduce( function ( watch, server ) {
+        watch[server] = {
+            files: [
+                path.join( __dirname, config[server].src.path, '/**/*.js' )
+            ],
+            tasks: [
+                'express:' + server
+            ],
+            options: {
+                spawn: false,
+                atBegin: true
+            }
+        };
+        return watch;
+    }, gruntConfig.watch );
 
-        if ( target !== 'registry' ) {
+    // grunt-open
+    gruntConfig.open = {};
+    servers.reduce( function ( open, server ) {
+        open[server] = {
+            path: path.join( url.format( config[server].url ), config[server].open ),
+            options: {
+                delay: 500
+            }
+        };
+        return open;
+    }, gruntConfig.open );
+
+    // init
+    grunt.initConfig( gruntConfig );
+
+    // custom tasks
+    grunt.registerTask( 'serve', function ( server ) {
+        var tasks = [];
+        if ( config[server].open ) {
             tasks.push( 'open:' + server );
         }
         tasks.push( 'watch:' + server );
         return grunt.task.run( tasks );
     } );
 
-    grunt.registerTask( 'default', ['jshint', 'concurrent:all'] );
+    // default task
+    grunt.registerTask( 'default', ['jshint:all', 'serve:' + servers[0]] );
 
 };

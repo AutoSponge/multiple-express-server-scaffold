@@ -19,21 +19,7 @@ path opens in the browser.
 
 ## Making this your own server(s)
 
-Most settings you might want to change can be found in the `config.json` file.  If 
-you want to add more settings (such as those for OAuth), try to extend the pattern:
-
- 1. Add the settings the config file
- 1. Add the settings to the app under "environmental settings" with `app.set()`
- 1. Use the settings throughout the app with `app.get()`
- 1. If needed, use the settings from the grunt launch script
+Most settings you might want to change can be found in the `config.json` file.
 
 By using or copying the structure of the `app` sever, you can add routes dynamically
-into the `/routes` folder, just follow the pattern provided:
-
-```javascript
-// router is injected to the exported function
-module.exports = function ( router ) {    
-    // define the route
-    ...
-};
-```
+into the `/routes` folder, just follow the pattern provided.

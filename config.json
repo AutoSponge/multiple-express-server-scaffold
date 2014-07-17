@@ -1,10 +1,15 @@
 {
     "app": {
-        "path": "app",
-        "port": 8888,
-        "host": "localhost",
-        "protocol": "http",
+        "src": {
+            "path": "/app",
+            "main": "app.js"
+        },
+        "url": {
+            "port": 8888,
+            "hostname": "localhost",
+            "protocol": "http"
+        },
         "livereload": 35726,
-        "routes": "/routes"
+        "open": "/"
     }
 }
