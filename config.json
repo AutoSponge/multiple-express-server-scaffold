@@ -9,7 +9,6 @@
             "hostname": "localhost",
             "protocol": "http"
         },
-        "livereload": 35726,
         "open": "/"
     }
 }
