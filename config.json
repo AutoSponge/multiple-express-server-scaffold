@@ -5,9 +5,9 @@
             "main": "app.js"
         },
         "url": {
-            "port": 8888,
+            "port": 8433,
             "hostname": "localhost",
-            "protocol": "http"
+            "protocol": "https"
         },
         "open": "/"
     }

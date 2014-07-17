@@ -67,7 +67,7 @@ module.exports = function ( grunt ) {
         open[server] = {
             path: path.join( url.format( config[server].url ), config[server].open ),
             options: {
-                delay: 800
+                delay: 1000
             }
         };
         return open;
