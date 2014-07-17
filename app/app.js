@@ -1,5 +1,6 @@
 'use strict';
-var config = require( '../config.json' ).app;
+var appName = __dirname.split( '/' ).pop();
+var config = require( '../config.json' )[appName];
 var express = require( 'express' );
 var fs = require( 'fs' );
 var path = require( 'path' );
