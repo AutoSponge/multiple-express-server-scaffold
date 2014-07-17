@@ -17,29 +17,27 @@ var app = module.exports = express();
 
 // middleware
 app.use( bodyParser.json() );
+
 app.use( bodyParser.urlencoded( {
     extended: true
 } ) );
-if ( process.env.NODE_ENV === 'development' ) {
-    // quick CORS headers
-    app.use( function ( req, res, next ) {
-        res.header( 'Access-Control-Allow-Origin', req.headers.origin );
-        res.header( 'Access-Control-Allow-Methods', 'HEAD,GET,PUT,POST,PATCH,DELETE' );
-        res.header( 'Access-Control-Allow-Headers', 'Content-Type, Authorization' );
 
-        // intercept OPTIONS method
-        if ( 'OPTIONS' === req.method ) {
-            res.send( 204 );
-        } else {
-            next();
-        }
-    } );
-}
+// quick CORS headers
+app.use( function ( req, res, next ) {
+    res.header( 'Access-Control-Allow-Origin', req.headers.origin );
+    res.header( 'Access-Control-Allow-Methods', 'HEAD,GET,PUT,POST,PATCH,DELETE' );
+    res.header( 'Access-Control-Allow-Headers', 'Content-Type, Authorization' );
+
+    // intercept OPTIONS method
+    if ( req.method.toUpperCase() === 'OPTIONS' ) {
+        res.send( 204 );
+    } else {
+        next();
+    }
+} );
 
 // error handling
-if ( process.env.NODE_ENV === 'development' ) {
-    app.use( errorhandler() );
-}
+app.use( errorhandler() );
 // end middleware
 
 // routes
