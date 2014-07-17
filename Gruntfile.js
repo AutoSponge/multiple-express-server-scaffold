@@ -67,11 +67,23 @@ module.exports = function ( grunt ) {
         open[server] = {
             path: path.join( url.format( config[server].url ), config[server].open ),
             options: {
-                delay: 500
+                delay: 800
             }
         };
         return open;
     }, gruntConfig.open );
+
+    // grunt-concurrent
+    gruntConfig.concurrent = {
+        all: {
+            tasks:servers.map( function ( server ) {
+                return 'serve:' + server;
+            } ),
+            options: {
+                logConcurrentOutput: true
+            }
+        }
+    };
 
     // init
     grunt.initConfig( gruntConfig );
@@ -87,6 +99,6 @@ module.exports = function ( grunt ) {
     } );
 
     // default task
-    grunt.registerTask( 'default', ['jshint:all', 'serve:' + servers[0]] );
+    grunt.registerTask( 'default', ['jshint:all', 'concurrent:all'] );
 
 };
