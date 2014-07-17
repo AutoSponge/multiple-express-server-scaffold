@@ -19,7 +19,13 @@ path opens in the browser.
 
 ## Making this your own server(s)
 
-Most settings you might want to change can be found in the `config.json` file.
+ 1. Copy the `/app` template and paste it to a sibling folder
+ 1. Change the `config.json` entry to match your new folder
+ 1. Make any changes needed to the config
+ 1. `npm install`
+ 1. `grunt`
+ 
+If you need to run more than one server at a time, follow the first 2 steps of the previous list,
+then copy the basic config and change the app name and port of the new config, then run `grunt`.
 
-By using or copying the structure of the `app` sever, you can add routes dynamically
-into the `/routes` folder, just follow the pattern provided.
+By copying the structure of the `app` sever, you can add middleware, routers, and routes dynamically.
