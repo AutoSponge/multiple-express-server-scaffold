@@ -3,7 +3,7 @@ express-server
 
 configurable express server scaffold with grunt automation
 
-## What this can scaffold do
+## What this scaffold can do
 
 With this scaffold, you can setup one or more servers.  Use the `config.json` file
 to define additional servers and copy the app folder (renaming it to match the config).
