@@ -6,10 +6,9 @@ configurable express server scaffold with grunt automation
 ## What this can scaffold do
 
 With this scaffold, you can setup one or more servers.  Use the `config.json` file
-to define additional servers, copy the appropriate areas of the `Gruntfile.js`,
-and place your code in the appropriate folder.  If you specify `https`, the script
-will generate a new certificate which you will need to accept when the server's `open`
-path opens in the browser.
+to define additional servers and copy the app folder (renaming it to match the config).
+If you specify `https`, the script will generate a new certificate which you will 
+need to accept when the server's `open` path opens in the browser.
 
 ## Getting Started
 
